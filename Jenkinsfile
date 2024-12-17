@@ -28,15 +28,16 @@ pipeline {
             }
         }
 
-        stage('Dockerize Application') {
-            steps {
-                echo "Création de l'image Docker"
-                sh '''
-                docker build -t $DOCKER_IMAGE .
-                docker images
-                '''
-            }
-        }
+      stage('Dockerize Application') {
+    steps {
+        echo "Création de l'image Docker"
+        sh '''
+        docker build -t $DOCKER_IMAGE . || { echo 'Docker build failed'; exit 1; }
+        docker images
+        '''
+    }
+}
+
     }
 
     post {
