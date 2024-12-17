@@ -1,17 +1,29 @@
-<<<<<<< HEAD
-# Étape 1 : Build de l'application
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
-WORKDIR /src
+# Utiliser une image de base contenant .NET SDK
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 
-COPY . .
-RUN dotnet restore
-RUN dotnet publish -c Release -o /app
-
-# Étape 2 : Image finale
-FROM mcr.microsoft.com/dotnet/runtime:6.0
+# Définir le répertoire de travail
 WORKDIR /app
-COPY --from=build /app .
 
+# Copier les fichiers de l'application dans l'image Docker
+COPY . ./
+
+# Restaurer les dépendances
+RUN dotnet restore
+
+# Construire l'application
+RUN dotnet build --configuration Release
+
+# Publier l'application
+RUN dotnet publish --configuration Release --output /app/publish
+
+# Utiliser une image d'exécution de .NET
+FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+
+# Définir le répertoire de travail pour l'exécution
+WORKDIR /app
+
+# Copier les fichiers publiés dans le conteneur
+COPY --from=build /app/publish .
+
+# Définir le point d'entrée de l'application
 ENTRYPOINT ["dotnet", "StudentGrades.dll"]
-<<<<<<< HEAD
-=======
